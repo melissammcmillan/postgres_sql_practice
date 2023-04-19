@@ -76,6 +76,25 @@ DROP TABLE practice;
 -- the error we get says relation practice does not exist
 -- "relation" means table
 
+-- Insert data into table
+SELECT * FROM examples;
+
+-- To insert data into a table, use
+/*
+
+INSERT INTO tablename (columnname1, columnname2, columnname3)
+VALUES ('value1', 'value2', 'value3');
+
+*/
+
+-- now add data into examples table
+-- exampled_id column doesn't need to be stated in the code
+-- because it's a serial data type and will be filled in automatically
+-- use single quotes or double quotes for strings
+
+INSERT INTO examples(first_name, last_name, email, nationality, age)
+VALUES ('David', 'Mitchell', 'dmitch@gmail.com', 'GBR', 43);
+
 
 
 
