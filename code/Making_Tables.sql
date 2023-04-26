@@ -602,6 +602,89 @@ SELECT * FROM movies_actors;
 
 -- all data is loaded
 
+-- practice retrieving data from tables
+SELECT * FROM directors;
+
+-- select one column from a table
+SELECT first_name FROM directors;
+
+-- select multiple columns from a table
+SELECT first_name, last_name FROM directors;
+
+SELECT first_name, last_name, nationality FROM directors;
+
+-- Retrieving data with a WHERE clause; WHERE is like a filter
+/* 
+SELECT columnname FROM tablename
+WHERE columnname = 'value';
+*/
+
+
+SELECT * FROM movies
+WHERE age_certificate = '15';
+
+-- use AND to retrieve data using two filters
+SELECT * FROM movies
+WHERE age_certificate = '15' 
+AND movie_lan = 'Chinese';
+
+-- use an OR statement instead
+SELECT * FROM movies
+WHERE age_certificate = '15' 
+OR movie_lan = 'Chinese';
+
+-- we can add as many AND clauses as we want
+SELECT * FROM movies
+WHERE movie_lan = 'English'
+AND age_certificate = '15'
+AND director_id = 27;
+
+-- Now onto logical operators (>, >=, <, <=)
+SELECT movie_name, movie_length FROM movies;
+
+SELECT * FROM movies
+WHERE movie_length > 120;
+
+SELECT * FROM movies
+WHERE movie_length >= 120;
+
+SELECT * FROM movies
+WHERE movie_length < 120;
+
+-- retrieve all the movies released in the 20th century
+SELECT * FROM movies
+WHERE release_date > '1999-12-31';
+
+-- retrieve all the movies released before the 20th century
+SELECT * FROM movies
+WHERE release_date <= '1999-12-31';
+
+-- if you want to use letters to retrieve data using the logical operators
+-- this will give us the movies with language that comes after the letter E
+SELECT * FROM movies
+WHERE movie_lan > 'English';
+
+-- Challenge
+-- select the movie_name and release_date of every movie
+SELECT movie_name, release_date FROM movies;
+
+-- select the first and last name of all American directors
+SELECT * FROM directors;
+
+SELECT first_name, last_name, nationality FROM directors
+WHERE nationality = 'American';
+
+-- select all male actors born after the 1st of January 1970
+SELECT * FROM actors;
+
+SELECT * FROM actors
+WHERE gender = 'M'
+AND date_of_birth > '1970-01-01';
+
+-- select the names of all movies which are over 90 minutes long and movie language is English.
+SELECT movie_name, movie_length, movie_lan FROM movies
+WHERE movie_length > 90
+AND movie_lan = 'English';
 
 
 
