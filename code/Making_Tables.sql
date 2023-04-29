@@ -686,6 +686,144 @@ SELECT movie_name, movie_length, movie_lan FROM movies
 WHERE movie_length > 90
 AND movie_lan = 'English';
 
+-- Using IN and NOT IN
+
+/*
+
+SELECT columnname1, columnname2 FROM tablename
+WHERE columnname3 IN ('value1', 'value2');
+
+SELECT columnname1, columnname2 FROM tablename
+WHERE columnname3 NOT IN ('value1', 'value2');
+
+*/
+
+SELECT first_name, last_name FROM actors
+WHERE first_name = 'Bruce';
+
+-- If we wanted to select from actors where the first name was either 
+-- Bruce or John, we would have to use IN. We can't use = for that
+
+SELECT first_name, last_name FROM actors
+WHERE first_name IN ('Bruce', 'John');
+
+SELECT first_name, last_name FROM actors
+WHERE first_name NOT IN ('Bruce', 'John');
+
+SELECT actor_id, first_name, last_name FROM actors
+WHERE actor_id IN (2,3,4,5,6,8);
+
+-- Using LIKE with % and _
+
+/*
+
+SELECT columnname FROM table
+WHERE columnname LIKE '%pattern%';
+
+SELECT columnname FROM table
+WHERE columnname LIKE '_pattern_';
+
+*/
+
+-- can use these to gather data with a certain pattern
+
+-- find all the actors with the first name beginning with the letter 'p'
+-- notice the letters are case sensitive
+SELECT * FROM actors
+WHERE first_name LIKE 'P%';
+
+-- the _ symbol looks for exactly one character that is anything
+SELECT * FROM actors
+WHERE first_name LIKE 'Pe_';
+
+-- find the first names that end in r
+SELECT * FROM actors
+WHERE first_name LIKE '%r';
+
+-- find the first names that contain an r after the first capital letter
+SELECT * FROM actors
+WHERE first_name LIKE '%r%';
+
+-- find the first names that contain an rl aside from the first/capital letter
+SELECT * FROM actors
+WHERE first_name LIKE '%rl%';
+
+-- find the first names that contain an rl in an exact location in the name
+-- we expect for this to return Carla
+SELECT * FROM actors
+WHERE first_name LIKE '__rl_';
+
+-- selecting data where a column is between 2 values
+
+/*
+SELECT columnname1, columnname2 FROM table
+WHERE columnname3 BETWEEN value1 AND value2;
+*/
+
+-- return movies that were released between 1995 and 1999
+SELECT * FROM movies
+WHERE release_date BETWEEN '1995-01-01' AND '1999-12-31';
+
+-- testing- are those dates above inclusive? Yes, Toy Story was included
+SELECT * FROM movies
+WHERE release_date BETWEEN '1995-11-22' AND '1999-12-31';
+
+-- use between with movie length
+SELECT * FROM movies
+WHERE movie_length BETWEEN 90 AND 120;
+
+-- try the movie_lan column
+SELECT * FROM movies
+WHERE movie_lan BETWEEN 'E' AND 'P';
+-- this returns movies with languages that start between E and P in the alphabet
+-- but note that it didn't include Portuguese because it comes after P by itself
+
+-- lets get Portugese included in there
+SELECT * FROM movies
+WHERE movie_lan BETWEEN 'E' AND 'Portuguese';
+
+-- you can get rid of English by adding an o to the E
+SELECT * FROM movies
+WHERE movie_lan BETWEEN 'Eo' AND 'Portuguese';
+
+-- We recommend not using BETWEEN with strings, just because it's awkward
+-- Usually it's used with dates and integers
+
+-- Challenge
+
+-- Select the movie names and movie language of all movies with a movie language of 
+-- English, Spanish, or Korean
+SELECT * FROM movies;
+
+SELECT movie_name, movie_lan FROM movies
+WHERE movie_lan IN ('English', 'Spanish', 'Korean');
+
+-- Select the first and last names of the actors whose last name begins with M
+-- and were born between 1/1/1940 and 12/31/1969
+SELECT * FROM actors;
+
+SELECT first_name, last_name FROM actors
+WHERE last_name LIKE 'M%' 
+AND date_of_birth BETWEEN '1940-01-01' AND '1969-12-31';
+
+
+-- Select the first and last names of the directors with nationality of British, French,
+-- or German born between 1/1/1950 and 12/31/1980.
+SELECT * FROM directors LIMIT 10;
+
+SELECT first_name, last_name FROM directors
+WHERE nationality IN ('British', 'French', 'German')
+AND date_of_birth BETWEEN '1950-01-01' AND '1980-12-31';
+
+-- could use NOT BETWEEN to get the directors not born in that range
+SELECT first_name, last_name FROM directors
+WHERE nationality IN ('British', 'French', 'German')
+AND date_of_birth NOT BETWEEN '1950-01-01' AND '1980-12-31';
+
+
+
+
+
 
 
 
