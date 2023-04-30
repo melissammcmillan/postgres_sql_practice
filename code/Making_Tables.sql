@@ -855,6 +855,153 @@ WHERE gender = 'F'
 ORDER BY actor_id DESC;
 
 
+-- Limiting the number of records returned 
+/*
+SELECT columnname1, columnname2 FROM tablename
+LIMIT N;
+*/
+
+-- let's see the three lowest revenue movies in the table
+SELECT * FROM movie_revenues
+ORDER BY domestic_takings
+LIMIT 3;
+
+-- using offsets removes the first X many you choose
+SELECT * FROM movie_revenues
+ORDER BY revenue_id
+LIMIT 5 OFFSET 3;
+
+-- using Fetch only gets specific rows of data we want
+/* SELECT column1 FROM table1
+FETCH FIRST 1 ROW ONLY;
+*/
+
+-- if we only want the first row only, we can omit the number
+SELECT movie_id, movie_name FROM movies
+FETCH FIRST ROW ONLY;
+
+-- if we want a few rows return, we can specify a number
+SELECT movie_id, movie_name FROM movies
+FETCH FIRST 3 ROW ONLY;
+
+-- we can also use OFFSET with FETCH, and OFFSET comes first
+SELECT movie_id, movie_name FROM movies
+OFFSET 8 ROWS
+FETCH FIRST 10 ROW ONLY;
+
+-- Distinct values
+/*
+SELECT DISTINCT columnname FROM tablename;
+*/
+
+-- look at how many unique languages we have in our movies table
+SELECT DISTINCT movie_lan FROM movies
+ORDER BY movie_lan;
+
+-- look at how many unique languages we have in our movies table with unique age_certificates
+-- so the languages are repeated, but we are getting returned that are unique language with the unique
+-- age_certificates. 
+SELECT DISTINCT movie_lan, age_certificate FROM movies
+ORDER BY movie_lan;
+
+
+-- we can get all kinds of unique/distinct data this way
+-- for example, we can just use DISTINCT with SELECT * to see
+-- all the unique rows in our dataset, essentially removing any duplicates
+-- we don't have any duplicate rows in this table, though, so it just returns
+-- the same as if we didn't use DISTINCT at all
+SELECT DISTINCT * FROM movies
+ORDER BY movie_lan;
+
+-- Challenge
+-- Select the American directors ordered from oldest to youngest
+SELECT * FROM directors
+WHERE nationality = 'American'
+ORDER BY date_of_birth;
+
+-- Return the distinct nationalities from the directors table
+SELECT DISTINCT nationality FROM directors;
+
+-- Return the first names, last names and date of births of the 10 youngest female actors
+SELECT first_name, last_name, date_of_birth FROM actors
+WHERE gender = 'F'
+ORDER BY date_of_birth DESC
+LIMIT 10;
+
+-- Dealing with NULL values
+/*
+SELECT * FROM tablename
+WHERE columnname IS NULL;
+
+SELECT * FROM tablename
+WHERE columnname IS NOT NULL;
+*/
+
+-- in the actors table, we have a null value for row 46, Xian Gao
+-- let's look at it
+SELECT * FROM actors
+WHERE date_of_birth IS NULL;
+
+-- let's look at the domestic takings data from our movie_revenues table
+-- this will show us the null data first
+SELECT * FROM movie_revenues
+ORDER BY domestic_takings DESC;
+
+-- to only see non-null data, use a WHERE clause
+SELECT * FROM movie_revenues
+WHERE domestic_takings IS NOT NULL
+ORDER BY domestic_takings DESC;
+
+-- can also use these clauses to find out where we have missing data
+SELECT * FROM movie_revenues
+WHERE (domestic_takings, international_takings) IS NULL;
+
+-- Setting a column name alias
+/*
+SELECT columnname AS new_columnname FROM tablename;
+*/
+
+-- this is how we can rename a column in the results display
+-- this does not change the name in the table
+SELECT last_name AS surname FROM directors;
+
+-- now use it in a WHERE clause, but remember the alias is only for results display purposes
+SELECT last_name AS surname FROM directors
+WHERE last_name = 'Anderson';
+
+-- There is a slight nuance when using ORDER BY
+SELECT last_name AS surname FROM directors
+WHERE last_name LIKE 'A%'
+ORDER BY surname;
+-- the behavior in the results here is because of the order of operations SQL takes. It first
+-- operates on the SELECT command, then operates on the WHERE clause, and then its final step is
+-- to look at the ORDER BY command, which it now recognizes the alias.
+-- we have the option to use the original name or the alias in the ORDER BY clause.
+
+-- Using concatenate to link things together
+
+/*
+SELECT 'string1' || 'string2' AS new_string;
+
+SELECT CONCAT(column1, column2) AS new_column FROM tablename;
+
+SELECT CONCAT_WS(' ', column1, column2) AS new_column FROM tablename;
+*/
+
+
+-- lets concat strings together
+SELECT 'concat' || 'together' AS new_string;
+
+-- lets concat strings together using a space for readability
+SELECT 'concat' || ' ' || 'together' AS new_string;
+
+-- let's concat columns together in a table
+SELECT CONCAT(first_name, last_name) AS full_name FROM actors;
+-- this doesn't change the structure of the table itself
+
+-- now make it more readable
+SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM actors;
+
 
 
 
