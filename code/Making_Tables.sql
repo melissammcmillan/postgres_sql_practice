@@ -820,8 +820,39 @@ SELECT first_name, last_name FROM directors
 WHERE nationality IN ('British', 'French', 'German')
 AND date_of_birth NOT BETWEEN '1950-01-01' AND '1980-12-31';
 
+-- Ordering the results returned
 
+/*
+SELECT columnname1, columnname2 FROM tablename
+ORDER BY columnname3;
+*/
 
+SELECT * FROM actors;
+
+-- use an ORDER BY statement to get data alphabetically by first name
+
+SELECT first_name, last_name, date_of_birth FROM actors
+ORDER BY first_name;
+
+-- use ASC or DESC to determine how ORDER BY gives us the data back
+SELECT * FROM actors
+ORDER BY first_name DESC;
+
+SELECT * FROM actors
+ORDER BY first_name ASC;
+
+-- now return the same data but order it by actor_id
+SELECT * FROM actors
+ORDER BY actor_id;
+
+-- we can use ASC or DESC on the date column too
+SELECT * FROM actors
+ORDER BY date_of_birth DESC;
+
+-- can also use WHERE clauses with ORDEr BY clauses
+SELECT * FROM actors
+WHERE gender = 'F'
+ORDER BY actor_id DESC;
 
 
 
