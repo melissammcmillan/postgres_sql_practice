@@ -1002,6 +1002,28 @@ SELECT CONCAT(first_name, last_name) AS full_name FROM actors;
 -- now make it more readable
 SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM actors;
 
+-- now use a separator between the columns
+SELECT CONCAT_WS(' ', first_name, last_name, date_of_birth) AS full_name FROM actors;
+
+-- Challenge
+-- find the top 3 movies with the highest international takings
+SELECT * FROM movie_revenues;
+
+SELECT * FROM movie_revenues
+WHERE international_takings IS NOT NULL
+ORDER BY international_takings DESC
+LIMIT 3;
+
+-- concatenate the first and last names of the directors, separated by a space, and call this new column full_name
+SELECT * FROM directors;
+
+SELECT CONCAT_WS(' ', first_name, last_name) AS full_name FROM directors;
+
+-- return the actors with missing first_names or missing date_of_births.
+SELECT * FROM actors;
+
+SELECT * FROM actors
+WHERE first_name IS NULL OR date_of_birth IS NULL;
 
 
 
