@@ -54,7 +54,46 @@ SELECT * FROM movies;
 SELECT * FROM movie_revenues;
 
 SELECT m.movie_name, m.release_date, mr.domestic_takings, mr.international_takings FROM movies m
-JOIN movie_revenues mr ON m.movie_id = mr.movie_id;
+JOIN movie_revenues mr ON m.movie_id = mr.movie_id
+ORDER BY mr.domestic_takings;
+
+-- INNER JOINS with USING, which us used only when the joining columns have the same name
+/*
+SELECT t1.column1, t1.column2, t2.column1 FROM table1 t1
+JOIN table t2 USING (column3);
+*/
+
+SELECT m.movie_name, mr.domestic_takings FROM movies m
+JOIN movie_revenues mr USING (movie_id)
+WHERE m.age_certificate IN ('12', '15', '18')
+ORDER BY mr.domestic_takings DESC;
+
+-- Challenge
+-- Select the directors first and last names, the movie names and release dates for all 
+-- Chinese, Korean, and Japanese movies
+SELECT * FROM movies;
+SELECT * FROM directors;
+
+SELECT d.first_name, d.last_name, m.movie_name, m.release_date, m.movie_lan FROM directors d
+JOIN movies m USING (director_id)
+WHERE m.movie_lan IN ('Chinese', 'Korean', 'Japanese');
+
+-- Select the movie names, release dates and international takings of all English language movies
+SELECT * FROM movies;
+SELECT * FROM movie_revenues;
+
+SELECT m.movie_name, m.release_date, m.movie_lan, mr.international_takings FROM movies m
+JOIN movie_revenues mr USING (movie_id)
+WHERE m.movie_lan = 'English';
+
+-- Select the movie names, domestic takings and international takings for all movies with either missing 
+-- domestic takings or missing international takings and order the results by movie name
+SELECT m.movie_name, mr.domestic_takings, mr.international_takings FROM movies m
+JOIN movie_revenues mr USING (movie_id)
+WHERE mr.domestic_takings IS NULL OR mr.international_takings IS NULL
+ORDER BY m.movie_name;
+
+
 
 
 
