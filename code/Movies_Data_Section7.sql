@@ -96,17 +96,83 @@ ORDER BY m.movie_name;
 
 
 
-
-
 -- Left Joins: returns all the rows of data in the left table and only the matching
 -- rows of data in the right table. Also called Left Outer Join.
+/*
+SELECT t1.column1, t1.column2, t2.column1 FROM table1 t1
+LEFT JOIN table2 t2 ON t1.column3 = t2.column3;
+*/
+
+-- get all the directors and the movies they are in
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM directors d
+LEFT JOIN movies mo ON d.director_id = mo.director_id;
+-- note that we have christopher nolan even though his movie is null
+-- if we were to do an inner join, we wouldnt get him
+
+-- we will get a different result if we switch table 1 and table 2 
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM movies mo
+LEFT JOIN directors d ON d.director_id = mo.director_id;
+-- we don't get christopher nolan in this result
+
+-- run another example query
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM directors d
+LEFT JOIN movies mo ON d.director_id = mo.director_id
+WHERE nationality = 'British';
 
 -- Right Joins: not very common; returns all the rows of data in the right table,
 -- and only the matching rows of data in the left table. They are the opposite of 
 -- left joins. Also called Right Outer Join.
 
--- Full Join: Will only return all rows of data in both tables, regardless of
+-- right joins return all the data from table 2 and only the matching data from table 1
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM directors d
+RIGHT JOIN movies mo ON d.director_id = mo.director_id;
+-- this will not return christopher nolan
+
+-- now if we were to switch table1 and table 2, it would be similar to the left join above
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM movies mo
+RIGHT JOIN directors d ON d.director_id = mo.director_id;
+-- and we get christoper nolan
+
+-- with a WHERE clause
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM movies mo
+RIGHT JOIN directors d ON d.director_id = mo.director_id
+WHERE mo.age_certificate = '18';
+
+-- note that right joins are fairly rare to see in SQL because they are just the
+-- equivalent of left joins with the tables switched, but it's good to be aware.
+
+-- FULL JOIN or FULL OUTER JOIN: Will only return all rows of data in both tables, regardless of
 -- commonality.
+/*
+SELECT t1.column1, t1.column2, t2.column1 FROM table1 t1
+FULL JOIN table2 t2 ON t1.column3 = t2.column3;
+*/
+
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM movies mo
+FULL JOIN directors d ON d.director_id = mo.director_id;
+
+-- now if I switch table one and table two, we will see we get the exact same result
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM directors d
+FULL JOIN movies mo ON d.director_id = mo.director_id;
+
+-- we can add any WHERE clauses we want
+SELECT d.director_id, d.first_name, d.last_name, mo.movie_name FROM movies mo
+FULL JOIN directors d ON d.director_id = mo.director_id
+WHERE movie_lan in ('German', 'Korean')
+ORDER BY d.last_name;
+
+-- Challenge
+-- Use a left join to select the first and last names of all British directors and the 
+-- names and age certificates of the movies that they directed.
+SELECT d.first_name, d.last_name, mo.movie_name, mo.age_certificate FROM directors d
+LEFT JOIN movies mo USING (director_id)
+WHERE d.nationality = 'British';
+
+-- Count the number of movies that each director has directed.
+SELECT d.first_name, d.last_name, COUNT(mo.movie_id) FROM directors d
+LEFT JOIN movies mo USING (director_id)
+GROUP BY d.first_name, d.last_name;
+-- you need to add each column that you put in SELECT that is NOT an agg function to the GROUP BY clause. 
 
 
 
