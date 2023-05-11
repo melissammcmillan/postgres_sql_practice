@@ -175,6 +175,75 @@ GROUP BY d.first_name, d.last_name;
 -- you need to add each column that you put in SELECT that is NOT an agg function to the GROUP BY clause. 
 
 
+-- Joining more than two tables
+/*
+SELECT t1.column, t2.column, t3.column FROM table t1
+JOIN table2 t2 ON t1.column = t2.column
+JOIN table3 t3 ON t3.column = t2.column;
+*/
+
+-- let's write a query to see data from three of our movie tables
+SELECT d.first_name, d.last_name, mo.movie_name, mr.international_takings, mr.domestic_takings FROM directors d
+JOIN movies mo ON d.director_id = mo.director_id
+JOIN movie_revenues mr ON mr.movie_id = mo.movie_id;
+
+-- we haven't queried data from our movies and actors table together yet because we haven't utilized our junction table. lets do that.
+SELECT ac.first_name, ac.last_name, mo.movie_name FROM actors ac
+JOIN movies_actors ma ON ac.actor_id = ma.actor_id
+JOIN movies mo ON mo.movie_id = ma.movie_id;
+
+-- can also use a WHERE clause and an ORDER BY
+SELECT ac.first_name, ac.last_name, mo.movie_name FROM actors ac
+JOIN movies_actors ma ON ac.actor_id = ma.actor_id
+JOIN movies mo ON mo.movie_id = ma.movie_id
+WHERE mo.movie_lan = 'English'
+ORDER BY movie_name;
+
+-- now select directors and actors and movies in a query
+SELECT d.first_name, d.last_name, mo.movie_name, ac.first_name, ac.last_name,
+mr.domestic_takings, mr.international_takings FROM directors d
+JOIN movies mo ON d.director_id = mo.director_id
+JOIN movies_actors ma ON ma.movie_id = mo.movie_id
+JOIN actors ac ON ac.actor_id = ma.actor_id
+JOIN movie_revenues mr ON mr.movie_id = mo.movie_id;
+
+-- Challenge for joining multiple tables
+-- Select the first and last names of all the actors who have starred in movies
+-- directed by Wes Anderson
+SELECT * FROM actors;
+
+SELECT * FROM directors
+WHERE directors.first_name = 'Wes' AND directors.last_name = 'Anderson';
+
+SELECT * FROM movies_actors;
+
+SELECT * FROM movies
+LIMIT 5;
+
+SELECT ac.first_name, ac.last_name, mo.movie_name, d.last_name FROM actors ac
+JOIN movies_actors ma ON ma.actor_id = ac.actor_id
+JOIN movies mo ON mo.movie_id = ma.movie_id
+JOIN directors d ON d.director_id = mo.director_id
+WHERE d.first_name = 'Wes' AND d.last_name = 'Anderson';
+
+
+-- Which director has the highest total domestic takings.
+SELECT * FROM movie_revenues;
+
+SELECT * FROM directors;
+
+SELECT * FROM movies;
+
+SELECT d.first_name, d.last_name, SUM(mr.domestic_takings) FROM directors d
+JOIN movies mo ON mo.director_id = d.director_id
+JOIN movie_revenues mr ON mr.movie_id = mo.movie_id
+WHERE mr.domestic_takings IS NOT NULL
+GROUP BY d.first_name, d.last_name
+ORDER BY SUM(mr.domestic_takings) DESC
+LIMIT 1;
+
+
+
 
 
 
