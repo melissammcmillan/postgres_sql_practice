@@ -243,11 +243,257 @@ ORDER BY SUM(mr.domestic_takings) DESC
 LIMIT 1;
 
 
+-- Union statements return the results of two or more select queries in a single results set
+/*
+SELECT column1, column2 FROM table1
+UNION
+SELECT column1, column2 FROM table2;
+*/
+
+-- Some rules: 
+-- 1. select the same number of columns in each SELECT statement
+-- 2. the corresponding columns between each table must have compatable data types
+-- so column1 from table1 and column1 from table2 must both be the same data type
+
+-- an example
+SELECT d.first_name, d.last_name FROM directors d
+UNION
+SELECT ac.first_name, ac.last_name FROM actors ac;
+
+-- Can also use WHERE clauses in each SELECT statement
+SELECT d.first_name, d.last_name FROM directors d
+WHERE d.nationality = 'American'
+UNION
+SELECT ac.first_name, ac.last_name FROM actors ac
+WHERE ac.gender = 'F';
+
+-- Can also use ORDER BY clauses in each SELECT statement
+SELECT d.first_name, d.last_name FROM directors d
+WHERE d.nationality = 'American'
+UNION
+SELECT ac.first_name, ac.last_name FROM actors ac
+WHERE ac.gender = 'F'
+ORDER BY first_name;
+-- note that if we want the ORDER BY to apply to both tables, we need to put it
+-- at the end of the query. Putting it before doesn't guarantee that it will apply 
+-- to the whole table
+
+-- Can also use ORDER BY clauses in each SELECT statement
+SELECT d.first_name, d.last_name, d.date_of_birth FROM directors d
+WHERE d.nationality = 'American'
+UNION
+SELECT ac.first_name, ac.last_name, ac.date_of_birth FROM actors ac
+WHERE ac.gender = 'F'
+ORDER BY first_name;
+
+-- what happens if we don't have the same data type between the SELECT statements?
+SELECT d.date_of_birth, d.last_name FROM directors d
+UNION
+SELECT ac.first_name, ac.last_name FROM actors ac;
+-- we get an error statement about matching data types
 
 
+-- UNION ALL statements: they are mostly the same as UNION except
+-- UNION ALL does not remove duplicated values the way that UNION
+-- by itself does
+
+/*
+SELECT column1, column2 FROM table1
+UNION ALL
+SELECT column1, column2 FROM table2;
+*/
+
+-- so if we have directors and actors with both name Tom here, UNION
+-- will remove the duplicates and we will have missing data
+SELECT first_name FROM directors
+UNION
+SELECT first_name FROM actors;
+-- 163 rows of data are returned here
+
+SELECT first_name FROM directors
+UNION ALL
+SELECT first_name FROM actors;
+-- 186 rows of data are returned here, because it has not removed duplicates
+
+-- Can use an ORDER BY
+SELECT first_name FROM directors
+UNION ALL
+SELECT first_name FROM actors
+ORDER BY first_name;
+
+-- Challenge
+-- Select the first_names, last names and dates of birth from directors and actors
+-- Order results by date_of_birth.
+SELECT first_name, last_name, date_of_birth FROM directors
+UNION ALL
+SELECT first_name, last_name, date_of_birth FROM actors
+ORDER BY date_of_birth;
+-- Using UNION ALL is a safe thing to do to make sure you aren't removing data accidentally
+
+-- Select the first and last names of all directors and actors born in the 1960s. Order the results by last name.
+SELECT d.first_name, d.last_name FROM directors d
+UNION ALL
+SELECT ac.first_name, ac.last_name FROM actors ac
+WHERE date_of_birth > '1959-12-31' AND date_of_birth < '1970-01-01'
+ORDER BY last_name;
+-- 70 rows, starting with Tomas Alfredson
+
+-- Another way to solve above
+SELECT d.first_name, d.last_name FROM directors d
+UNION ALL
+SELECT ac.first_name, ac.last_name FROM actors ac
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 70 rows, starting with Romas Alfredson
+
+SELECT d.first_name, d.last_name FROM directors d
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+UNION ALL
+SELECT ac.first_name, ac.last_name FROM actors ac
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 72 rows, starting with Tomas Alfredson
+-- I'm not sure why we get two extra rows of data in this one
+-- but be safe and apply WHERE clauses to each SELECT query not at the end
+
+-- checking my work
+SELECT d.first_name, d.last_name, d.date_of_birth FROM directors d
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 9 rows
+SELECT ac.first_name, ac.last_name, ac.date_of_birth FROM actors ac
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 31 rows
+
+-- now I'm so confused!
+
+-- Intersect: this also combines data from two or more tables like UNION and UNION ALL
+-- but this only returns rows that are in both SELECT statements
+/*
+SELECT column1 FROM table1
+INTERSECT
+SELECT column1 FROM table2;
+*/
+
+-- example using first_name columns
+SELECT first_name FROM directors
+INTERSECT
+SELECT first_name FROM actors;
+-- this gives us all the unique first names that are found in both tables
+
+-- what is difference in using DISTINCT? 
+SELECT * FROM directors;
+
+SELECT * FROM actors;
+
+SELECT * FROM movies;
+
+SELECT * FROM movies_actors;
 
 
+SELECT DISTINCT(d.first_name) FROM directors d
+JOIN ;
+-- Okay, I think I have figured out the value of INTERSECT: in order to find the commonality
+-- between director and actor first names, I would have to do a few JOINS and a pretty
+-- complicated query to return what INTERSECT can provide for me.
 
+-- can also use ORDER BY
+SELECT first_name FROM directors
+INTERSECT
+SELECT first_name FROM actors
+ORDER BY first_name;
+-- 12 rows returned
+
+-- can also use ORDER BY
+SELECT first_name FROM directors
+WHERE nationality = 'American'
+INTERSECT
+SELECT first_name FROM actors
+ORDER BY first_name;
+-- 9 rows returned
+
+
+-- EXCEPT statements only returns data found in table 1 and not found in table 2.
+-- this returns data from Table1, if it's not returned by table2
+/*
+SELECT column1 FROM table1
+EXCEPT
+SELECT column1 FROM table2;
+*/
+
+-- example
+SELECT first_name FROM directors
+EXCEPT
+SELECT first_name FROM actors;
+-- so this is selecting the first names from directors, unless that name
+-- is found in the actors table
+
+-- can use an ORDER BY
+SELECT first_name FROM directors
+EXCEPT
+SELECT first_name FROM actors
+ORDER BY first_name;
+
+-- can use WHERE clauses and an ORDER BY
+SELECT first_name FROM directors
+WHERE nationality = 'American'
+EXCEPT
+SELECT first_name FROM actors
+ORDER BY first_name;
+
+-- now compare to our query above
+-- here was what we did above that yielded two different results
+-- Another way to solve above
+SELECT d.first_name, d.last_name, d.date_of_birth FROM directors d
+UNION ALL
+SELECT ac.first_name, ac.last_name, ac.date_of_birth FROM actors ac
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 70 rows, starting with Romas Alfredson
+
+SELECT d.first_name, d.last_name, d.date_of_birth FROM directors d
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+UNION ALL
+SELECT ac.first_name, ac.last_name, ac.date_of_birth FROM actors ac
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 72 rows, starting with Tomas Alfredson
+-- I'm not sure why we get two extra rows of data in this one
+-- but be safe and apply WHERE clauses to each SELECT query not at the end
+
+SELECT d.first_name, d.last_name, d.date_of_birth FROM directors d
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 9 rows
+SELECT ac.first_name, ac.last_name, ac.date_of_birth FROM actors ac
+WHERE date_of_birth BETWEEN '1960-01-01' AND '1969-12-31'
+ORDER BY last_name;
+-- 31 rows
+
+-- Challenge
+-- Intersect the first_name, last name and date of birth columns in the directors and actors tables
+SELECT first_name, last_name, date_of_birth FROM directors
+INTERSECT
+SELECT first_name, last_name, date_of_birth FROM actors;
+-- I think this found all the directors who are also actors
+
+
+-- Retrieve the first names of male actors unless they have the same first name as any British directors
+SELECT first_name, gender FROM actors
+WHERE gender = 'M'
+EXCEPT
+SELECT first_name, nationality FROM directors
+WHERE nationality = 'British';
+-- this returned 92 values
+
+SELECT first_name FROM actors
+WHERE gender = 'M'
+EXCEPT
+SELECT first_name FROM directors
+WHERE nationality = 'British';
+-- this returned 88 values
+-- I don't know why this is!
 
 
 
