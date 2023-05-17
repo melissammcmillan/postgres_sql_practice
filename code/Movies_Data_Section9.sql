@@ -63,7 +63,57 @@ SELECT date_of_birth FROM actors
 WHERE first_name = 'Tom' AND last_name = 'Cruise';
 
 -- Uncorrelated Subqueries Part 2
+-- we can pass multiple values from the inner query to the outer query using IN
 
+-- select the movie name from the movies where the movie has intl takings greater 
+-- than the domestic takings
+
+-- start with inner query
+SELECT movie_id FROM movie_revenues
+WHERE international_takings > domestic_takings;
+
+--now write the outer query with the inner query
+SELECT movie_name FROM movies
+WHERE movie_id IN
+(SELECT movie_id FROM movie_revenues
+WHERE international_takings > domestic_takings);
+-- so this was a little bit like a join, but instead of joining tables
+-- we just referenced one table to give us information about another table
+
+-- Can also use JOIN calls with these subqueries too to retrieve even more
+-- information
+SELECT mo.movie_name, mo.movie_id, d.first_name, d.last_name FROM movies mo
+JOIN directors d ON mo.director_id = d.director_id
+WHERE mo.movie_id IN
+(SELECT movie_id FROM movie_revenues
+WHERE international_takings > domestic_takings);
+
+-- Challenge on uncorrelated subqueries 
+-- Select the first and last names of all the actors older than Marlon Brando
+SELECT first_name, last_name, date_of_birth FROM actors
+WHERE date_of_birth < 
+(SELECT date_of_birth FROM actors
+WHERE first_name = 'Marlon' AND last_name = 'Brando');
+
+-- Select the movie names of all movies that have domestic takings above 300 million.
+SELECT movie_name, movie_id FROM movies
+WHERE movie_id IN 
+(SELECT movie_id FROM movie_revenues
+WHERE domestic_takings > 300);
+-- I wanted to put the = sign in the first WHERE clause, so I just need to remember that it needs to
+-- be IN, not =
+
+-- You can get this result by using a JOIN instead, just FYI
+SELECT mo.movie_name, mo.movie_id FROM movies mo
+JOIN movie_revenues mr ON mo.movie_id = mr.movie_id
+WHERE mr.domestic_takings > 300;
+
+-- Return the shortest and longest movie length for movies with an above average domestic taking.
+SELECT MIN(movie_length), MAX(movie_length) FROM movies
+WHERE movie_id IN 
+(SELECT movie_id FROM movie_revenues
+WHERE domestic_takings >
+	(SELECT AVG(domestic_takings) FROM movie_revenues));
 
 
 
