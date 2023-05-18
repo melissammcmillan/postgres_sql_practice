@@ -114,6 +114,55 @@ WHERE movie_id IN
 (SELECT movie_id FROM movie_revenues
 WHERE domestic_takings >
 	(SELECT AVG(domestic_takings) FROM movie_revenues));
+	
+
+-- Correlated Subqueries: these are subqueries that cannot run independently of the outer query
+
+-- example, we have one table in the outer query and one in the inner query
+-- they are the same table, but two different instances of the same table
+SELECT d1.first_name, d1.last_name, d1.date_of_birth, d1.nationality FROM directors d1
+WHERE d1.date_of_birth =
+(SELECT MIN(date_of_birth) FROM directors d2
+WHERE d2.nationality = d1.nationality);
+-- normally the MIN() agg function would yield just one number as the result, but because we have
+-- set the WHERE clause in the inner query where d2.nationality = d1.nationality, we will get the
+-- minimum date of birth for each nationality in the directors table. And the query as a whole, both
+-- inner and outer parts, will give us the name and date of birth for the youngest directors of each nationality
+
+
+-- if we try to run the inner query on its own, we will get an error, because it doesn't know what the d1
+-- table is referring to
+SELECT MIN(date_of_birth) FROM directors d2
+WHERE d2.nationality = d1.nationality;
+
+-- another example: return the longest movies for each different movie language in the movies table
+SELECT m1.movie_name, m1.movie_length, m1.movie_lan FROM movies m1
+WHERE m1.movie_length =
+(SELECT MAX(m2.movie_length) FROM movies m2
+WHERE m2.movie_lan = m1.movie_lan)
+ORDER BY m1.movie_length;
+
+-- Challenge
+-- Select the first name, last name, and date of birth for the oldest actors of each gender
+SELECT a1.first_name, a1.last_name, a1.date_of_birth, a1.gender FROM actors a1
+WHERE a1.date_of_birth = 
+(SELECT MIN(date_of_birth) FROM actors a2
+WHERE a2.gender = a1.gender);
+
+
+-- Select the movie name, movie length and age certificate for movies with an above average length 
+-- for their age certificate
+SELECT m1.movie_name, m1.movie_length, m1.age_certificate FROM movies m1
+WHERE m1.movie_length >
+(SELECT AVG(m2.movie_length) FROM movies m2
+WHERE m2.age_certificate = m1.age_certificate)
+ORDER BY m1.age_certificate;
+
+
+
+
+
+
 
 
 
