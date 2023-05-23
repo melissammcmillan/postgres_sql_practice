@@ -148,6 +148,145 @@ SELECT CONCAT(LEFT(first_name,1), LEFT(last_name,1)) AS initials FROM directors;
 -- Could also separate the initials with a separator
 SELECT CONCAT_WS('.', LEFT(first_name,1), LEFT(last_name,1)) AS initials FROM directors;
 
+-- SUBSTRING FUNCTION
+-- This selects a section of a string, depending on the from and count arguments
+
+/*
+SELECT SUBSTRING('string', from, count);
+
+SELECT SUBSTRING(column_name, from, count) FROM table_name;
+*/
+
+SELECT SUBSTRING('long string', 2, 6);
+-- returns 'ong st', so it started on the second character and returned 6 characters starting from 
+-- the second character
+
+-- can also use this on columns in a table
+SELECT first_name, SUBSTRING(first_name, 3, 4) FROM actors;
+
+-- REPLACE FUNCTION
+
+/*
+SELECT REPLACE('source_string', 'old_string', 'new_string');
+
+SELECT REPLACE(column_name, 'old_string', 'new_string') FROM table_name;
+
+UPDATE table_name
+SET column_name = REPLACE(column_name, 'old_string', 'new_string')
+WHERE column_name = 'value';
+*/
+
+-- example
+SELECT REPLACE('a cat plays with another cat', 'cat', 'dog');
+
+-- try on a database
+SELECT * FROM actors;
+
+-- replace the F or M in gender column with full strings spelled out
+SELECT first_name, last_name, REPLACE(gender, 'M', 'Male') FROM actors;
+-- This replaces 'Male' for each 'M' in the gender column
+-- but this still doesn't change the actors table, only the output
+
+-- To change the actual table, use the UPDATE statement
+SELECT * FROM directors;
+-- Change American nationality to read 'USA' instead
+UPDATE directors
+SET nationality = REPLACE(nationality, 'American', 'USA')
+WHERE nationality = 'American';
+
+SELECT * FROM directors;
+
+-- Didnt actually need to use a replace for that one, could have just done this:
+UPDATE directors
+SET nationality = 'USA'
+WHERE nationality = 'American';
+-- But sometimes we actually do need to use a REPLACE() function, here is an exmaple
+-- If we wanted to change the 'British' nationality to 'English' AND use a shortcut,
+-- we could do this:
+UPDATE directors
+SET nationality = REPLACE(nationality, 'Brit', 'Engl')
+WHERE nationality = 'British';
+-- So this would just take advantage of the 'ish' parts of the British and English strings
+
+SELECT * FROM directors;
+
+-- SPLIT_PART FUNCTION
+-- Takes a string and two other parameters and splits a string according to the delimiter
+/*
+SELECT SPLIT_PART('string', 'delimiter', field_number);
+
+SELECT SPLIT_PART(column_name, 'delimiter', field_number) FROM table_name;
+*/
+
+-- split apart an email to get the first and last name of the customer
+SELECT SPLIT_PART('first_name.last_name@gmail.com', '@', 1);
+-- this returns the first_name.last_name part of the split string
+-- if we change the field_number to 2, we get the gmail.com part of the split string
+SELECT SPLIT_PART('first_name.last_name@gmail.com', '@', 2);
+
+-- try splitting on the . and see what we get
+SELECT SPLIT_PART('first_name.last_name@gmail.com', '.', 3);
+
+-- use on our movie database
+-- try to get the first work of each movie name
+SELECT movie_name, SPLIT_PART(movie_name, ' ', 1) AS first_word FROM movies;
+
+-- Using Casting to apply String Functions to Non String Data Types
+-- Can apply string functions to non data types using casting
+-- It converts one datatype to another
+-- The cast operator is the double ::
+/*
+SELECT column_name::DATATYPE FROM table_name;
+*/
+
+SELECT * FROM directors;
+-- cannot currently use string operators on the date_of_birth column because
+-- it is a date column
+
+-- but we can cast the date_of_birth column to a string and then perform string operations
+SELECT date_of_birth::TEXT FROM directors;
+
+-- Use the SPLIT_PART function on DOB column so that we only return the year
+SELECT SPLIT_PART(date_of_birth::TEXT, '-', 1) FROM directors;
+
+-- can also cast as VARCHAR
+SELECT SPLIT_PART(date_of_birth::VARCHAR, '-', 1) FROM directors;
+
+-- can also cast as VARCHAR with set amount of characters
+SELECT SPLIT_PART(date_of_birth::VARCHAR(3), '-', 1) FROM directors;
+
+-- We can't cast a DOB column to an integer
+-- can also cast as VARCHAR
+SELECT SPLIT_PART(date_of_birth::INT, '-', 1) FROM directors;
+-- throws an error because there are dashes in the values
+
+-- Challenge!
+-- Use the substring function to retrieve the first 6 characters of each movie name
+-- and the year they released
+
+SELECT SUBSTRING(movie_name, 1, 6) AS movie_name, 
+	SUBSTRING(release_date::TEXT, 1, 4) FROM movies;
+
+-- Retrieve the first name initial and last name of every actor born in May
+SELECT * FROM actors;
+
+SELECT SUBSTRING(first_name, 1, 1), last_name, date_of_birth FROM actors
+WHERE date_of_birth::TEXT ILIKE '%-05-%';
+
+-- Can also do this with a split_part function for date of birth:
+SELECT SUBSTRING(first_name, 1, 1) AS fn_initial, last_name, date_of_birth FROM actors
+WHERE SPLIT_PART(date_of_birth::TEXT, '-', 2) = '05';
+
+-- Replace the movie language for all English language movies, with age certificate 
+-- rating 18, to 'Eng'.
+SELECT * FROM movies;
+
+SELECT REPLACE(movie_lan, 'English', 'Eng'), * FROM movies
+WHERE age_certificate = '18';
+
+
+
+
 
 
 
