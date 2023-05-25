@@ -54,8 +54,16 @@ SELECT teamname, COUNT(teamname) FROM standings
 JOIN fixtures ON teamname.standings = hometeam.fixtures
 GROUP BY teamname;
 
+-- Give me the hometeams where the home team was the winner
+SELECT round, hometeam FROM fixtures
+WHERE hometeamscore > awayteamscore
+ORDER BY round;
 
-
+-- Put a 1 next to the hometeams that won the match
+SELECT round, hometeam, COUNT(hometeam) FROM fixtures
+WHERE hometeamscore > awayteamscore
+GROUP BY round, hometeam
+ORDER BY round;
 
 
 
