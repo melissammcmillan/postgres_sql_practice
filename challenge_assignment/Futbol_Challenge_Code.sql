@@ -44,17 +44,18 @@ SELECT * FROM standings;
 SELECT * FROM fixtures;
 
 -- Populate the standings table from the fixtures table
+-- Get the team names into standings from fixtures
+INSERT INTO standings (teamname)
+SELECT DISTINCT(hometeam) FROM fixtures;
 
-UPDATE standings
-SET teamname = 'test';
+-- count the number of games played by each team and place in the
+-- standings table
+SELECT teamname, COUNT(teamname) FROM standings
+JOIN fixtures ON teamname.standings = hometeam.fixtures
+GROUP BY teamname;
 
-UPDATE standings
-SET teamname = (SELECT DISTINCT(hometeam) FROM fixtures);
 
-UPDATE standings
-SET teamname = (SELECT DISTINCT(f.hometeam) FROM fixtures f
-			   UNION ALL
-			   SELECT s.teamname FROM standings s);
+
 
 
 
