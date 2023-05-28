@@ -66,4 +66,44 @@ GROUP BY round, hometeam
 ORDER BY round;
 
 
+-- join on team name on teamname = hometeam or away team
+-- 
+
+-- 
+-- INSERT INTO standings (gamesplayed)
+SELECT COUNT(DISTINCT(round)) FROM fixtures;
+
+INSERT INTO standings(gamesplayed)
+SELECT COUNT(DISTINCT(round)) FROM fixtures;
+
+
+SELECT SUM(COUNT(hometeam), COUNT(awayteam)), * FROM fixtures;
+
+SELECT hometeam FROM fixtures
+UNION
+SELECT awayteam FROM fixtures;
+
+SELECT COUNT(DISTINCT(round)) FROM fixtures
+WHERE hometeam or awayteam = 
+(SELECT teamname FROM standings);
+
+SELECT COUNT(DISTINCT(round)) FROM fixtures
+WHERE 
+
+-- Plan of attack: 
+-- 1. Find the wins, draws, and losses and add them into standings
+-- 2. Then total the wins, draws, and losses to the gamesplayed column, should equal 38
+-- 3. Then calculate the scored_received, goaldifference, and points columns
+-- 4. Calculate the positions and fill them in
+
+
+
+
+
+
+
+
+
+
+
 

@@ -2,7 +2,7 @@
 
 -- What are aggregate functions? They perform a calculation on a column
 -- and return just one value
--- Examples are COUTN, SUM, MIN, MAX, and AVG
+-- Examples are COUNT, SUM, MIN, MAX, and AVG
 
 -- Aggregate function COUNT
 /*
