@@ -60,6 +60,170 @@ FROM (SELECT hometeam, COUNT(hometeamscore) AS homewins FROM fixtures
 		WHERE hometeamscore > awayteamscore
 		GROUP BY hometeam) AS f1
 -- calculate the number of home losses for each team
+LEFT OUTER JOIN (SELECT hometeam, COUNT(hometeamscore) AS homelosses FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY hometeam) AS f2
+	ON f1.hometeam = f2.hometeam
+-- calculate the number of home draws for each team
+JOIN (SELECT hometeam, COUNT(hometeamscore) AS homedraws FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY hometeam) AS f3
+	ON f1.hometeam = f3.hometeam
+-- calculate the number of home win goals scored for each team
+JOIN (SELECT hometeam, SUM(hometeamscore::INT) AS homewingoalscored FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY hometeam) AS f4
+	ON f1.hometeam = f4.hometeam
+-- calculate the number of home win goals received for each team
+JOIN (SELECT hometeam, SUM(awayteamscore::INT) AS homewingoalsreceived FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY hometeam) AS f5
+	ON f1.hometeam = f5.hometeam
+-- calculate the number of home loss goals scored for each team
+JOIN (SELECT hometeam, SUM(hometeamscore::INT) AS homelossgoalsscored FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY hometeam) AS f6
+	ON f1.hometeam = f6.hometeam
+-- calculate the number of home loss goals received for each team
+JOIN (SELECT hometeam, SUM(awayteamscore::INT) AS homelossgoalsreceived FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY hometeam) AS f7
+	ON f1.hometeam = f7.hometeam
+-- calculate the number of home draw goals received for each team
+JOIN (SELECT hometeam, SUM(hometeamscore::INT) AS homedrawgoalscored FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY hometeam) AS f8
+	ON f1.hometeam = f8.hometeam
+-- calculate the number of home draw goals received for each team
+JOIN (SELECT hometeam, SUM(awayteamscore::INT) AS homedrawgoalreceived FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY hometeam) AS f9
+	ON f1.hometeam = f9.hometeam
+-- calculate the number of away wins for each team
+JOIN (SELECT awayteam, COUNT(awayteamscore) AS awaywins FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY awayteam) AS f10
+	ON f1.hometeam = f10.awayteam
+-- calculate the number of away losses for each team
+JOIN (SELECT awayteam, COUNT(awayteamscore) AS awaylosses FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY awayteam) AS f11
+	ON f1.hometeam = f11.awayteam
+-- calculate the number of away draws for each team
+JOIN (SELECT awayteam, COUNT(awayteamscore) AS awaydraws FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY awayteam) AS f12
+	ON f1.hometeam = f12.awayteam
+-- calculate the number of away win goals scored for each team
+JOIN (SELECT awayteam, SUM(awayteamscore::INT) AS awaywingoalsscored FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY awayteam) AS f13
+	ON f1.hometeam = f13.awayteam
+-- calculate the number of away win goals received for each team
+JOIN (SELECT awayteam, SUM(hometeamscore::INT) AS awaywingoalsreceived FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY awayteam) AS f14
+	ON f1.hometeam = f14.awayteam
+-- calculate the number of away loss goals scored for each team
+JOIN (SELECT awayteam, SUM(awayteamscore::INT) AS awaylossgoalscored FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY awayteam) AS f15
+	ON f1.hometeam = f15.awayteam
+-- calculate the number of away loss goals received for each team
+JOIN (SELECT awayteam, SUM(hometeamscore::INT) AS awaylossgoalsreceived FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY awayteam) AS f16
+	ON f1.hometeam = f16.awayteam
+-- calculate the number of away draw goals scored for each team
+JOIN (SELECT awayteam, SUM(awayteamscore::INT) AS awaydrawgoalsscored FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY awayteam) AS f17
+	ON f1.hometeam = f17.awayteam
+-- calculate the number of away draw goals received for each team
+JOIN (SELECT awayteam, SUM(hometeamscore::INT) AS awaydrawgoalsreceived FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY awayteam) AS f18
+	ON f1.hometeam = f18.awayteam
+);
+
+SELECT * FROM intertable;
+
+-- I think I need to split this big table into two different tables- one for the
+-- hometeam and one for the away team, and then I get use join to combine everything 
+-- at the end. Let me try and see if it will work.
+SELECT f1.hometeam, f1.homewins, f2.homelosses
+-- calculate the number of home wins for each team
+FROM (SELECT hometeam, COUNT(hometeamscore) AS homewins FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY hometeam) AS f1
+-- calculate the number of home losses for each team
+LEFT OUTER JOIN (SELECT hometeam, COUNT(hometeamscore) AS homelosses FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY hometeam) AS f2
+	ON f1.hometeam = f2.hometeam;
+
+-- This query will be for the hometeam information
+-- Now add on the homedraws, awaywins, awaylosses, and awaydraws
+SELECT f1.hometeam, f1.homewins, f2.homelosses, f3.homedraws, f4.homewingoalscored, 
+	f5.homewingoalsreceived, f6.homelossgoalsscored, f7.homelossgoalsreceived,
+	f8.homedrawgoalscored, f9.homedrawgoalreceived
+-- calculate the number of home wins for each team
+FROM (SELECT hometeam, COUNT(hometeamscore) AS homewins FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY hometeam) AS f1
+-- calculate the number of home losses for each team
+JOIN (SELECT hometeam, COUNT(hometeamscore) AS homelosses FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY hometeam) AS f2
+	ON f1.hometeam = f2.hometeam
+-- calculate the number of home draws for each team
+JOIN (SELECT hometeam, COUNT(hometeamscore) AS homedraws FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY hometeam) AS f3
+	ON f1.hometeam = f3.hometeam
+-- calculate the number of home win goals scored for each team
+JOIN (SELECT hometeam, SUM(hometeamscore::INT) AS homewingoalscored FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY hometeam) AS f4
+	ON f1.hometeam = f4.hometeam
+-- calculate the number of home win goals received for each team
+JOIN (SELECT hometeam, SUM(awayteamscore::INT) AS homewingoalsreceived FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY hometeam) AS f5
+	ON f1.hometeam = f5.hometeam
+-- calculate the number of home loss goals scored for each team
+JOIN (SELECT hometeam, SUM(hometeamscore::INT) AS homelossgoalsscored FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY hometeam) AS f6
+	ON f1.hometeam = f6.hometeam
+-- calculate the number of home loss goals received for each team
+JOIN (SELECT hometeam, SUM(awayteamscore::INT) AS homelossgoalsreceived FROM fixtures
+		WHERE hometeamscore < awayteamscore
+		GROUP BY hometeam) AS f7
+	ON f1.hometeam = f7.hometeam
+-- calculate the number of home draw goals received for each team
+JOIN (SELECT hometeam, SUM(hometeamscore::INT) AS homedrawgoalscored FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY hometeam) AS f8
+	ON f1.hometeam = f8.hometeam
+-- calculate the number of home draw goals received for each team
+JOIN (SELECT hometeam, SUM(awayteamscore::INT) AS homedrawgoalreceived FROM fixtures
+		WHERE hometeamscore = awayteamscore
+		GROUP BY hometeam) AS f9
+	ON f1.hometeam = f9.hometeam;
+
+
+-- this will be for the awayteam information
+SELECT f1.hometeam, f1.homewins, f2.homelosses, f3.homedraws, f4.homewingoalscored, 
+	f5.homewingoalsreceived, f6.homelossgoalsscored, f7.homelossgoalsreceived,
+	f8.homedrawgoalscored, f9.homedrawgoalreceived, f10.awaywins, f11.awaylosses,
+	f12.awaydraws, f13.awaywingoalsscored, f14.awaywingoalsreceived, f15.awaylossgoalscored,
+	f16.awaylossgoalsreceived, f17.awaydrawgoalsscored, f18.awaydrawgoalsreceived
+-- calculate the number of home wins for each team
+FROM (SELECT hometeam, COUNT(hometeamscore) AS homewins FROM fixtures
+		WHERE hometeamscore > awayteamscore
+		GROUP BY hometeam) AS f1
+-- calculate the number of home losses for each team
 JOIN (SELECT hometeam, COUNT(hometeamscore) AS homelosses FROM fixtures
 		WHERE hometeamscore < awayteamscore
 		GROUP BY hometeam) AS f2
