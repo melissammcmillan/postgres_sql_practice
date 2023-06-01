@@ -13,8 +13,7 @@ CREATE TABLE fixtures (
 
 SELECT * FROM fixtures;
 
--- Use PGAdmin4 to upload data into fixtures from csv file.
--- for future reference, I had to remove the last two columns
+-- Use PGAdmin4 to upload data into fixtures from csv file. for future reference, I had to remove the last two columns
 -- in the importer because they aren't in the csv.
 
 -- Separate the score column into hometeamscore and awayteamscore
@@ -26,8 +25,7 @@ SET awayteamscore = SUBSTRING(score,3,1);
 
 SELECT * FROM fixtures;
 
--- Create the intermediate table, intertable, which will host
--- stats for all the teams
+-- Create the intermediate table, intertable, which will host stats for all the teams
 
 CREATE TABLE intertable (
 	teamname VARCHAR(30),
@@ -151,8 +149,7 @@ JOIN (SELECT awayteam, SUM(hometeamscore::INT) AS awaydrawgoalsreceived FROM fix
 
 SELECT * FROM intertable;
 
--- Now I need to create the standings table which will get populated
--- using the info from intertable and fixtures
+-- Now I need to create the standings table which will get populated using the info from intertable and fixtures
 
 -- Create the standings table that will be the final answer
 CREATE TABLE standings (
@@ -177,11 +174,51 @@ SELECT * FROM fixtures;
 -- Get the team names into standings from fixtures
 INSERT INTO standings ();
 
-SELECT i.teamname, SUM(i.homewins, i.homelosses, i.homedraws, i.awaywins, i.awaylosses, i.awaydraws) AS gamesplayed,
-	SUM(i.homewins, i.awaywins) AS wins, SUM(i.homedraws, i.awaydraws) AS draws, SUM(i.homelosses, i.awaylosses) AS losses,
-	CONCAT_WS(':', SUM(homewingoalsscored, homelossgoalsscored, homedrawgoalscored, awaywingoalsscored, awaylossgoalsscored, awaydrawgoalsscored), 
-			 SUM(homewingoalsreceived, homelossgoalsreceived, homedrawgoalsreceived, awaywingoalsreceived, awaylossgoalsreceived, awaydrawgoalsreceived))
+SELECT i.teamname, 
+	i.homewins + i.homelosses + i.homedraws + i.awaywins + i.awaylosses + i.awaydraws AS gamesplayed,
+	i.homewins + i.awaywins AS wins, 
+	i.homedraws + i.awaydraws AS draws, 
+	i.homelosses + i.awaylosses AS losses,
+	CONCAT_WS(':', i.homewingoalscored + i.homelossgoalsscored + i.homedrawgoalscored + i.awaywingoalsscored + i.awaylossgoalsscored + i.awaydrawgoalsscored, 
+			 i.homewingoalsreceived + i.homelossgoalsreceived + i.homedrawgoalsreceived + i.awaywingoalsreceived + i.awaylossgoalsreceived + i.awaydrawgoalsreceived) AS scored_received,
+	(i.homewingoalscored + i.homelossgoalsscored + i.homedrawgoalscored + i.awaywingoalsscored + i.awaylossgoalsscored + i.awaydrawgoalsscored) - 
+		(i.homewingoalsreceived + i.homelossgoalsreceived + i.homedrawgoalsreceived + i.awaywingoalsreceived + i.awaylossgoalsreceived + i.awaydrawgoalsreceived) AS goalsdifference,
+	((i.homewins + i.awaywins)*3) + ((i.homedraws + i.awaydraws)*1) AS points
 FROM intertable i;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT teamname,
+	CONCAT_WS(':', SUM(homewingoalscored, homelossgoalsscored, homedrawgoalscored, awaywingoalsscored, awaylossgoalsscored, awaydrawgoalsscored), 
+			 SUM(homewingoalsreceived, homelossgoalsreceived, homedrawgoalsreceived, awaywingoalsreceived, awaylossgoalsreceived, awaydrawgoalsreceived)) AS scored_received
+FROM intertable;
+
+-- this adds the homewins and awaywins together to make the total column called wins
+SELECT teamname, homewins, awaywins, homewins + awaywins AS wins
+FROM intertable;
+
+-- can we use SUM() for this; NO- SUM is an aggregate function, and we would need to use a group by
+SELECT teamname, homewins, awaywins, SUM(homewins,awaywins) AS wins
+FROM intertable;
 	
 SELECT i.teamname, SUM(i.homewins, i.homelosses, i.homedraws, i.awaywins, i.awaylosses, i.awaydraws) AS gamesplayed,
 	SUM(i.homewins, i.awaywins) AS wins, SUM(i.homedraws, i.awaydraws) AS draws, SUM(i.homelosses, i.awaylosses) AS losses,
