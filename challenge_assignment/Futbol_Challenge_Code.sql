@@ -184,6 +184,7 @@ SELECT i.teamname,
 	(i.homewingoalscored + i.homelossgoalsscored + i.homedrawgoalscored + i.awaywingoalsscored + i.awaylossgoalsscored + i.awaydrawgoalsscored) - 
 		(i.homewingoalsreceived + i.homelossgoalsreceived + i.homedrawgoalsreceived + i.awaywingoalsreceived + i.awaylossgoalsreceived + i.awaydrawgoalsreceived) AS goalsdifference,
 	((i.homewins + i.awaywins)*3) + ((i.homedraws + i.awaydraws)*1) AS points
+	
 FROM intertable i;
 
 
