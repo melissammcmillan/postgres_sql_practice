@@ -49,12 +49,13 @@ CREATE TABLE intertable (
 	awaydrawgoalsreceived INT
 );
 
+
 INSERT INTO intertable(
 -- Now add on the homedraws, awaywins, awaylosses, and awaydraws
-SELECT f1.hometeam, f1.homewins, f2.homelosses, f3.homedraws, f4.homewingoalscored, 
-	f5.homewingoalsreceived, f6.homelossgoalsscored, f7.homelossgoalsreceived,
-	f8.homedrawgoalscored, f9.homedrawgoalreceived, f10.awaywins, f11.awaylosses,
-	f12.awaydraws, f13.awaywingoalsscored, f14.awaywingoalsreceived, f15.awaylossgoalscored,
+SELECT f1.hometeam, f1.homewins, COALESCE(f2.homelosses,0) AS homelosses, f3.homedraws, f4.homewingoalscored, 
+	f5.homewingoalsreceived, COALESCE(f6.homelossgoalsscored,0) AS homelossgoalsscored, 
+	COALESCE(f7.homelossgoalsreceived,0) AS homelossgoalsreceived, f8.homedrawgoalscored, f9.homedrawgoalreceived, 
+	f10.awaywins, f11.awaylosses, f12.awaydraws, f13.awaywingoalsscored, f14.awaywingoalsreceived, f15.awaylossgoalscored,
 	f16.awaylossgoalsreceived, f17.awaydrawgoalsscored, f18.awaydrawgoalsreceived
 -- calculate the number of home wins for each team
 FROM (SELECT hometeam, COUNT(hometeamscore) AS homewins FROM fixtures
@@ -154,7 +155,6 @@ SELECT * FROM intertable;
 -- Create the standings table that will be the final answer
 CREATE TABLE standings (
 
-	Position INTEGER,
 	TeamName VARCHAR(30),
 	GamesPlayed INTEGER,
 	Wins INTEGER,
@@ -163,17 +163,14 @@ CREATE TABLE standings (
 	Scored_Received VARCHAR(10),
 	GoalsDifference INTEGER,
 	Points INTEGER
-
 );
 
 SELECT * FROM standings;
 
 SELECT * FROM fixtures;
 
--- Populate the standings table from the fixtures table
--- Get the team names into standings from fixtures
-INSERT INTO standings ();
-
+-- Populate the standings table from intertable
+INSERT INTO standings (
 SELECT i.teamname, 
 	i.homewins + i.homelosses + i.homedraws + i.awaywins + i.awaylosses + i.awaydraws AS gamesplayed,
 	i.homewins + i.awaywins AS wins, 
@@ -185,7 +182,23 @@ SELECT i.teamname,
 		(i.homewingoalsreceived + i.homelossgoalsreceived + i.homedrawgoalsreceived + i.awaywingoalsreceived + i.awaylossgoalsreceived + i.awaydrawgoalsreceived) AS goalsdifference,
 	((i.homewins + i.awaywins)*3) + ((i.homedraws + i.awaydraws)*1) AS points
 	
-FROM intertable i;
+FROM intertable i);
+
+SELECT * FROM standings;
+
+-- test some code here
+DROP TABLE testtable;
+
+CREATE TABLE testtable AS
+SELECT * FROM standings
+ORDER BY points DESC;
+
+SELECT * FROM testtable;
+
+ALTER TABLE testtable
+ADD COLUMN position serial unique;
+
+
 
 
 
