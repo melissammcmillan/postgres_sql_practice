@@ -13,8 +13,8 @@ CREATE TABLE fixtures (
 
 SELECT * FROM fixtures;
 
--- Use PGAdmin4 to upload data into fixtures from csv file. for future reference, I had to remove the last two columns
--- in the importer because they aren't in the csv.
+-- Use PGAdmin4 to upload data into fixtures from csv file. for my own future reference, 
+-- I had to remove the last two columns in the importer because they aren't in the csv.
 
 -- Separate the score column into hometeamscore and awayteamscore
 UPDATE fixtures
