@@ -186,16 +186,11 @@ FROM intertable i);
 
 SELECT * FROM init_standings;
 
--- Create the final standings table
+-- Create the final standings table and use RANK to add in the Position column into init_standings
 CREATE TABLE standings AS
-SELECT * FROM init_standings
-ORDER BY points DESC;
-
-SELECT * FROM standings;
-
--- Create the position column using the points column
-ALTER TABLE standings
-ADD COLUMN position serial unique;
+SELECT *, RANK() OVER (
+					ORDER BY points DESC, goalsdifference DESC) AS position
+FROM init_standings;
 
 -- Check and deliver the final answer
 SELECT * FROM standings;
