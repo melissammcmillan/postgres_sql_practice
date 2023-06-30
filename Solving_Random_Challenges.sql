@@ -21,3 +21,26 @@ SELECT * FROM nums;
 
 -- Write the solution that solves the problem
 SELECT POWER(n, 3)::int AS res from nums;
+
+-- A practice problem for using WITH to create an auxillary statement for use in a larger query
+-- This is sometimes a way to make subqueries more readable. The departments schema has just id
+-- and name in it, where the sales schema has id, name, department_id (which is the foreign key
+-- to departments), and price. So here we are trying to return all departments that have a sale
+-- greater than 90.00.
+WITH 
+	special_sales AS (
+		SELECT department_id FROM sales
+		WHERE price > 90.00)
+	SELECT id, name FROM departments
+	WHERE id IN (
+		SELECT department_id FROM special_sales);
+-- another way we could have written this without using WITH is:
+SELECT id, name FROM departments
+WHERE id IN (
+	SELECT department_id FROM sales
+	WHERE price > 90.00); 
+
+
+
+
+
