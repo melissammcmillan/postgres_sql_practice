@@ -41,6 +41,41 @@ WHERE id IN (
 	WHERE price > 90.00); 
 
 
+-- Return a table with one column, called Greeting, and the only row in the 
+-- table is the string 'hello world'.
+CREATE FUNCTION Greeting() RETURNS TEXT AS $$
+	SELECT 'hello world' AS result;
+$$ LANGUAGE SQL;
+
+SELECT Greeting();
+
+
+-- A practice problem for using TRUNC() function, which truncates a number to a specific
+-- decimal point or to zero. Given a decimals table schema with columns id, number1, and number2, 
+-- return a table with a single column 'towardzero' where the values are the result of number1 +
+-- number2 truncated towards zero.
+SELECT TRUNC(number1 + number2) AS towardzero FROM decimals;
+
+-- A practice problem for using CASE or if/else statements. The task is to take table schema 
+-- numbers, which has three columns: id, number1, and number2, and return a similar column with
+-- columns number1 and number2 but use CASE to return the columns as: if the sum of the column is
+-- an odd number, return the minimum number in that column. If the sum of the column is an even 
+-- number, return the maximum number in that column.
+SELECT
+	CASE
+		WHEN SUM(number1) % 2 = 0 THEN MAX(number1)
+		ELSE MIN(number1)
+		END AS number1
+	CASE
+		WHEN SUM(number2) % 2 = 0 THEN MAX(number2)
+		ELSE MIN(number2)
+		END AS number2
+FROM numbers;
+
+
+
+
+
 
 
 
