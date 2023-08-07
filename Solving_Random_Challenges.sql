@@ -73,6 +73,17 @@ SELECT
 FROM numbers;
 
 
+--
+CREATE FUNCTION fibfunc(num INT) RETURNS TABLE (n INT, res INT) 
+	AS $$ SELECT DISTINCT(n), SUM(n) AS res FROM evenfib 
+	WHERE n < num
+	GROUP BY n
+	HAVING n % 2 == 0 
+	ORDER BY n ASC $$
+	LANGUAGE SQL;
+
+SELECT * FROM fibfunc(33);
+
 
 
 
